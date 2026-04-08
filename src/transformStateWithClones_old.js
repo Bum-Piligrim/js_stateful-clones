@@ -14,52 +14,47 @@ function transformStateWithClones(state, actions) {
   let currentState = { ...state };
 
   /* проходимося по масиву зі списком дій actions
-   і якщо потрапляємона дію clear,
-   обнуляємо об'єкт currentState до порожнього */
+   і перевіряємо чи є в цьому списку дій clear,
+   як тільки він знаходиться, обнуляємо об'єкт currentState до порожнього */
 
   for (const action of actions) {
-    switch (action.type) {
-      case 'clear':
-        currentState = {};
-        break;
+    if (action.type === 'clear') {
+      currentState = {};
+    }
 
-        /*
-   якщо потрапляємона на дію addProperties
+    /*
+   тут перевіряємо чи є в цьому списку дій addProperties,
+   як тільки він знаходиться,
    створюємо новий об'єкт currentState
    на основі попереднього
    і додаємо значення з властивості extraData */
 
-      case 'addProperties':
-        currentState = { ...currentState, ...action.extraData };
-        break;
+    if (action.type === 'addProperties') {
+      currentState = { ...currentState, ...action.extraData };
+    }
 
-        /*
-   якщо потрапляємона на дію removeProperties,
-   робимо копію
+    /*
+   тут перевіряємо чи є в цьому списку дій removeProperties,
+   як тільки він знаходиться,
+   Робимо копію
    щоб не міняти попередній стан у масиві history
    на основі попереднього
    проходимося по масиву keysToRemove об'єкта action
    і в об'єкті currentState видаляємо властивості
    згідно вказаних ключів в масиві keysToRemove */
 
-      case 'removeProperties':
-        currentState = { ...currentState };
+    if (action.type === 'removeProperties') {
+      currentState = { ...currentState };
 
-        for (const key of action.keysToRemove) {
-          delete currentState[key];
-        }
-        break;
-
-      // обробка невідомих типів дій
-      // якщо прийде невідома команда, ми нічого не робимо з currentState
-      default:
-        break;
+      for (const key of action.keysToRemove) {
+        delete currentState[key];
+      }
     }
 
     /*
    додаємо в масив 'комітів' об'єкт,
-   що утворився в результаті поточної дії
-   */
+   що утворився в результаті видалення властивостей
+   із массива keysToRemove */
 
     history.push({ ...currentState });
   }
